@@ -1,6 +1,5 @@
 name = "cloudflare-perf-testing"
-type = "javascript"
-account_id = ""
+type = "webpack"
 workers_dev = true
 route = ""
 zone_id = ""
