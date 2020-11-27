@@ -80,8 +80,7 @@ async function handleRequest(event) {
 
       res.headers.set('Cache-Control', 'max-age=300')
 
-      res.headers.set('Cache-Control', 'max-age=3600')
-    }
+    res.headers.set('Cache-Control', 'max-age=3600')
 
     event.waitUntil(cache.put(cacheKey, res.clone()))
   }
