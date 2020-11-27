@@ -40,7 +40,7 @@ async function handleDocument(res, searchParams) {
   const transformedResponse = await rewriter.transform(res)
   const newResponse = new Response(transformedResponse.body, res)
 
-  if (newResponse) {
+  if (searchParams.has('remove-preload')) {
     newResponse.headers.delete('link')
   }
 
@@ -67,13 +67,20 @@ async function handleRequest(event) {
   let res = await cache.match(cacheKey)
 
   if (!res) {
-    res = await fetch(fetchUrl)
+    res = await fetch(fetchUrl, {
+      cf: {
+        cacheEverything: true,
+        cacheTtl: 3600,
+      },
+    })
 
     // handle navigate
     if (res.headers.get('Content-Type').includes('text/html')) {
       res = await handleDocument(res, parsedUrl.searchParams)
 
       res.headers.set('Cache-Control', 'max-age=300')
+
+      res.headers.set('Cache-Control', 'max-age=3600')
     }
 
     event.waitUntil(cache.put(cacheKey, res.clone()))
